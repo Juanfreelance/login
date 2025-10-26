@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login & Register - dengan Backend</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .switch-form {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .switch-form a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .switch-form a:hover {
+            text-decoration: underline;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .dashboard {
+            text-align: center;
+        }
+
+        .dashboard h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .user-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .user-info p {
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .user-info strong {
+            color: #333;
+        }
+
+        .alert {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 0.6s linear infinite;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Login Form -->
+        <div id="loginForm">
+            <div class="header">
+                <h1>Selamat Datang</h1>
+                <p>Silakan login ke akun Anda</p>
+            </div>
+            <div id="loginAlert"></div>
+            <form onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" required placeholder="masukkan@email.com">
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" required placeholder="Masukkan password">
+                </div>
+                <button type="submit" class="btn" id="loginBtn">Login</button>
+            </form>
+            <div class="switch-form">
+                Belum punya akun? <a onclick="showRegister()">Daftar di sini</a>
+            </div>
+        </div>
+
+        <!-- Register Form -->
+        <div id="registerForm" class="hidden">
+            <div class="header">
+                <h1>Daftar Akun Baru</h1>
+                <p>Buat akun untuk memulai</p>
+            </div>
+            <div id="registerAlert"></div>
+            <form onsubmit="handleRegister(event)">
+                <div class="form-group">
+                    <label for="registerName">Nama Lengkap</label>
+                    <input type="text" id="registerName" required placeholder="Masukkan nama lengkap">
+                </div>
+                <div class="form-group">
+                    <label for="registerEmail">Email</label>
+                    <input type="email" id="registerEmail" required placeholder="masukkan@email.com">
+                </div>
+                <div class="form-group">
+                    <label for="registerPassword">Password</label>
+                    <input type="password" id="registerPassword" required placeholder="Minimal 6 karakter">
+                </div>
+                <div class="form-group">
+                    <label for="registerConfirmPassword">Konfirmasi Password</label>
+                    <input type="password" id="registerConfirmPassword" required placeholder="Ulangi password">
+                </div>
+                <button type="submit" class="btn" id="registerBtn">Daftar</button>
+            </form>
+            <div class="switch-form">
+                Sudah punya akun? <a onclick="showLogin()">Login di sini</a>
+            </div>
+        </div>
+
+        <!-- Dashboard (After Login) -->
+        <div id="dashboard" class="hidden dashboard">
+            <h2>Dashboard</h2>
+            <div class="user-info">
+                <p><strong>Nama:</strong> <span id="userName"></span></p>
+                <p><strong>Email:</strong> <span id="userEmail"></span></p>
+                <p><strong>ID:</strong> <span id="userId"></span></p>
+            </div>
+            <button onclick="handleLogout()" class="btn">Logout</button>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+
+        // Cek session saat halaman dimuat
+        window.onload = function() {
+            const savedUser = localStorage.getItem('currentUser');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                showDashboard();
+            }
+        };
+
+        function showLogin() {
+            document.getElementById('loginForm').classList.remove('hidden');
+            document.getElementById('registerForm').classList.add('hidden');
+            document.getElementById('dashboard').classList.add('hidden');
+            clearAlerts();
+        }
+
+        function showRegister() {
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('registerForm').classList.remove('hidden');
+            document.getElementById('dashboard').classList.add('hidden');
+            clearAlerts();
+        }
+
+        function showDashboard() {
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('registerForm').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
+            
+            if (currentUser) {
+                document.getElementById('userName').textContent = currentUser.name;
+                document.getElementById('userEmail').textContent = currentUser.email;
+                document.getElementById('userId').textContent = currentUser.id;
+            }
+        }
+
+        async function handleRegister(event) {
+            event.preventDefault();
+            
+            const btn = document.getElementById('registerBtn');
+            const name = document.getElementById('registerName').value;
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            const confirmPassword = document.getElementById('registerConfirmPassword').value;
+            
+            // Validasi password
+            if (password.length < 6) {
+                showAlert('registerAlert', 'Password harus minimal 6 karakter', 'error');
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                showAlert('registerAlert', 'Password tidak cocok', 'error');
+                return;
+            }
+
+            // Disable button dan tampilkan loading
+            btn.disabled = true;
+            btn.innerHTML = 'Mendaftar...<span class="loading"></span>';
+            
+            try {
+                // Kirim request ke backend
+                const response = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ name, email, password })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showAlert('registerAlert', data.message, 'success');
+                    event.target.reset();
+                    
+                    // Pindah ke halaman login setelah 1.5 detik
+                    setTimeout(() => {
+                        showLogin();
+                        showAlert('loginAlert', 'Silakan login dengan akun baru Anda', 'success');
+                    }, 1500);
+                } else {
+                    showAlert('registerAlert', data.message, 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert('registerAlert', 'Terjadi kesalahan. Pastikan server berjalan!', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = 'Daftar';
+            }
+        }
+
+        async function handleLogin(event) {
+            event.preventDefault();
+            
+            const btn = document.getElementById('loginBtn');
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            // Disable button dan tampilkan loading
+            btn.disabled = true;
+            btn.innerHTML = 'Login...<span class="loading"></span>';
+            
+            try {
+                // Kirim request ke backend
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    currentUser = data.user;
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    showDashboard();
+                } else {
+                    showAlert('loginAlert', data.message, 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert('loginAlert', 'Terjadi kesalahan. Pastikan server berjalan!', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = 'Login';
+            }
+        }
+
+        function handleLogout() {
+            currentUser = null;
+            localStorage.removeItem('currentUser');
+            showLogin();
+            showAlert('loginAlert', 'Anda telah logout', 'success');
+        }
+
+        function showAlert(elementId, message, type) {
+            const alertDiv = document.getElementById(elementId);
+            alertDiv.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+            
+            setTimeout(() => {
+                alertDiv.innerHTML = '';
+            }, 3000);
+        }
+
+        function clearAlerts() {
+            document.getElementById('loginAlert').innerHTML = '';
+            document.getElementById('registerAlert').innerHTML = '';
+        }
+    </script>
+</body>
+</html>

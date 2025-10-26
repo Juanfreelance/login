@@ -1,0 +1,25 @@
+{
+  "name": "login-register-system",
+  "version": "1.0.0",
+  "description": "Sistem login dan register dengan penyimpanan ke file",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "keywords": [
+    "login",
+    "register",
+    "nodejs",
+    "express"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "express": "^4.21.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}
